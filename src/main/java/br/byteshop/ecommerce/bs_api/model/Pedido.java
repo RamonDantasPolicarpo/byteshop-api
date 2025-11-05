@@ -1,8 +1,12 @@
 package br.byteshop.ecommerce.bs_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb04_pedido", schema = "loja")
@@ -10,7 +14,7 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pedido", nullable = false)
-    private Long id;
+    private Long id_pedido;
 
     @Column(name = "numero_pedido", nullable = false, unique = true, length = 50)
     private String numeroPedido;
@@ -18,13 +22,34 @@ public class Pedido {
     @Column(name = "data_pedido", nullable = false)
     private LocalDate dataPedido;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Cliente id_cliente;
 
-    @OneToOne(fetch =  FetchType.EAGER)
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "id_status_pedido", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private StatusPedido statusPedido;
+
+    @OneToMany(
+            mappedBy = "idPedido",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    @JsonManagedReference
+    private List<ItemPedido> itens = new ArrayList<>();
+
+
+
+    public List<ItemPedido> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemPedido> itens) {
+        this.itens = itens;
+    }
 
     public StatusPedido getStatusPedido() {
         return statusPedido;
@@ -46,6 +71,10 @@ public class Pedido {
         return dataPedido;
     }
 
+    public void setDataPedido(LocalDate dataPedido) {
+        this.dataPedido = dataPedido;
+    }
+
     public String getNumeroPedido() {
         return numeroPedido;
     }
@@ -55,12 +84,10 @@ public class Pedido {
     }
 
     public Long getId() {
-        return id;
+        return id_pedido;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.id_pedido = id;
     }
-
-
 }
