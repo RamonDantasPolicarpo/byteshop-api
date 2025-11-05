@@ -11,7 +11,7 @@ public class Cliente {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_cliente", nullable = false)
-  private Integer idCliente;
+  private Long idCliente;
 
   @Column(name = "cpf", unique = true, nullable = false, length = 11)
   private String cpf;
@@ -101,11 +101,11 @@ public class Cliente {
     this.cpf = cpf;
   }
 
-  public Integer getIdCliente() {
+  public Long getIdCliente() {
     return idCliente;
   }
 
-  public void setIdCliente(Integer idCliente) {
+  public void setIdCliente(Long idCliente) {
     this.idCliente = idCliente;
   }
 }
