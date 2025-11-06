@@ -30,7 +30,9 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    public void deleteCliente(Integer id) {
+    public void deletarCliente(Integer id) {
         clienteRepository.deleteById(id);
     }
+
+
 }
