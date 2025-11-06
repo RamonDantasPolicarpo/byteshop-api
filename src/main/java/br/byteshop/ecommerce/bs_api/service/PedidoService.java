@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PedidoService {
@@ -28,6 +30,20 @@ public class PedidoService {
         this.produtoService = produtoService;
         this.clienteService = clienteService;
         this.statusPedidoRepository = statusPedidoRepository;
+    }
+
+    @Transactional
+    public Pedido atualizarStatusPedido(Integer idPedido, Integer idNovoStatus) {
+
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado com ID: " + idPedido));
+
+        StatusPedido novoStatus = statusPedidoRepository.findById(idNovoStatus)
+                .orElseThrow(() -> new RuntimeException("Status de Pedido não encontrado com ID: " + idNovoStatus));
+
+        pedido.setStatusPedido(novoStatus);
+
+        return pedidoRepository.save(pedido);
     }
 
     @Transactional
@@ -70,5 +86,17 @@ public class PedidoService {
             produtoService.salvarProduto(produto);
         }
         return pedidoRepository.save(novoPedido);
+    }
+
+    public List<Pedido> listarPedidos() {
+        return pedidoRepository.findAll();
+    }
+
+    public Optional<Pedido> buscarPorId(Integer id) {
+        return pedidoRepository.findById(id);
+    }
+
+    public List<Pedido> buscarPedidosPorCliente(Integer clienteId) {
+        return pedidoRepository.findByClienteId(clienteId);
     }
 }

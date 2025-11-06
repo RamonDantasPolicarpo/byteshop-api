@@ -14,7 +14,7 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pedido", nullable = false)
-    private Long id_pedido;
+    private Integer id_pedido;
 
     @Column(name = "numero_pedido", nullable = false, unique = true, length = 50)
     private String numeroPedido;
@@ -83,11 +83,11 @@ public class Pedido {
         this.numeroPedido = numeroPedido;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id_pedido;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id_pedido = id;
     }
 }

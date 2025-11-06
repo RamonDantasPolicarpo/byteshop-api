@@ -67,15 +67,13 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarCliente(@PathVariable Integer id) {
-        if (clienteService.buscarPorId(id).isPresent()) {
+    public ResponseEntity<?> deletarCliente(@PathVariable Integer id) {
+        try {
             clienteService.deleteCliente(id);
             return ResponseEntity.noContent().build();
-        }
-        else {
-            return ResponseEntity.notFound().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 }
 

@@ -8,7 +8,6 @@ import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 
-
 @Entity
 @Table(name = "tb05_item_pedido", schema = "loja")
 public class ItemPedido {
@@ -30,11 +29,10 @@ public class ItemPedido {
     @JsonBackReference
     private Pedido idPedido;
 
-    @ManyToOne (fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_produto", nullable = false, unique = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Produto idProduto;
-
 
     public BigDecimal getValorUnitario() {
         return valorUnitario;
@@ -42,6 +40,10 @@ public class ItemPedido {
 
     public void setValorUnitario(BigDecimal valorUnitario) {
         this.valorUnitario = valorUnitario;
+    }
+
+    public Pedido getIdPedido() {
+        return idPedido;
     }
 
     public void setIdPedido(Pedido idPedido) {
@@ -67,9 +69,4 @@ public class ItemPedido {
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
     }
-
-    public Pedido getIdPedido() {
-        return idPedido;
-    }
-
 }

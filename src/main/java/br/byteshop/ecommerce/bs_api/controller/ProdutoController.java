@@ -3,6 +3,8 @@ package br.byteshop.ecommerce.bs_api.controller;
 import br.byteshop.ecommerce.bs_api.model.Produto;
 import br.byteshop.ecommerce.bs_api.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +24,9 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public List<Produto> listarProdutos() {
-        return produtoService.listarProdutos();
+    public ResponseEntity<Page<Produto>> listarProdutos(Pageable pageable) {
+        Page<Produto> paginaDeProdutos = produtoService.listarProdutos(pageable);
+        return ResponseEntity.ok(paginaDeProdutos);
     }
 
     @GetMapping("/{id}")
@@ -35,6 +38,12 @@ public class ProdutoController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/categoria/{categoria}")
+    public ResponseEntity<List<Produto>> buscarPorCategoria(@PathVariable String categoria) {
+        List<Produto> produtos = produtoService.buscarPorCategoria(categoria);
+        return ResponseEntity.ok(produtos);
     }
 
     @PostMapping
@@ -62,12 +71,12 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarProduto(@PathVariable Integer id) {
-        if (produtoService.buscarPorId(id).isPresent()) {
+    public ResponseEntity<?> deletarProduto(@PathVariable Integer id) {
+        try {
             produtoService.deletarProduto(id);
             return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
