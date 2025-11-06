@@ -1,11 +1,13 @@
 package br.byteshop.ecommerce.bs_api.controller;
 
 import br.byteshop.ecommerce.bs_api.model.Cliente;
+import br.byteshop.ecommerce.bs_api.model.Produto;
 import br.byteshop.ecommerce.bs_api.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.ref.Cleaner;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +20,6 @@ public class ClienteController {
 
     @Autowired
     public ClienteController(ClienteService clienteService) {
-
         this.clienteService = clienteService;
     }
 
@@ -32,7 +33,7 @@ public class ClienteController {
         Optional<Cliente> cliente = clienteService.buscarPorId(id);
 
         if (cliente.isPresent()) {
-            return ResponseEntity.ok().body(cliente.get());
+            return ResponseEntity.ok(cliente.get());
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -44,25 +45,23 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizarCliente(@PathVariable Integer id, @RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> atualizarCliente(@PathVariable Integer id, @RequestBody Cliente clienteDetalhes) {
         Optional<Cliente> clienteOptional = clienteService.buscarPorId(id);
 
-        if (clienteOptional.isPresent()) {
+        if(clienteOptional.isPresent()) {
             Cliente clienteExistente = clienteOptional.get();
-            clienteExistente.setNomeCliente(cliente.getNomeCliente());
-            clienteExistente.setCpf(cliente.getCpf());
-            clienteExistente.setDataNascimento(cliente.getDataNascimento());
-            clienteExistente.setEmail(cliente.getEmail());
-            clienteExistente.setCep(cliente.getCep());
-            clienteExistente.setEstado(cliente.getEstado());
-            clienteExistente.setCidade(cliente.getCidade());
-            clienteExistente.setEndereco(cliente.getEndereco());
+            clienteExistente.setCpf(clienteDetalhes.getCpf());
+            clienteExistente.setNomeCliente(clienteDetalhes.getNomeCliente());
+            clienteExistente.setDataNascimento(clienteDetalhes.getDataNascimento());
+            clienteExistente.setEmail(clienteDetalhes.getEmail());
+            clienteExistente.setCep(clienteDetalhes.getCep());
+            clienteExistente.setEndereco(clienteDetalhes.getEndereco());
+            clienteExistente.setEstado(clienteDetalhes.getEstado());
 
-        Cliente clienteAtualizado = clienteService.salvar(clienteExistente);
-        return ResponseEntity.ok(clienteAtualizado);
-        }
-    else {
-        return ResponseEntity.notFound().build();
+            Cliente clienteAtualizado = clienteService.salvar(clienteExistente);
+            return ResponseEntity.ok(clienteAtualizado);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -77,3 +76,5 @@ public class ClienteController {
     }
 }
 
+
+}
