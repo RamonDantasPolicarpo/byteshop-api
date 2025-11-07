@@ -1,5 +1,7 @@
 package br.byteshop.ecommerce.bs_api.service;
 
+import br.byteshop.ecommerce.bs_api.exception.BusinessRuleException;
+import br.byteshop.ecommerce.bs_api.exception.ResourceNotFoundException;
 import br.byteshop.ecommerce.bs_api.model.ItemPedido;
 import br.byteshop.ecommerce.bs_api.model.Produto;
 import br.byteshop.ecommerce.bs_api.repository.ItemPedidoRepository;
@@ -27,6 +29,11 @@ public class ProdutoService {
         return produtoRepository.findAll(pageable);
     }
 
+    public Produto buscarProdutoOuLancarExcecao(Integer id){
+        return produtoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com ID" + id));
+    }
+
     public Optional<Produto> buscarPorId(Integer id) {
         return produtoRepository.findById(id);
     }
@@ -37,10 +44,10 @@ public class ProdutoService {
 
     public void deletarProduto(Integer id) {
         Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com ID: " + id));
         List<ItemPedido> itensComEsteProduto = itemPedidoRepository.findByProdutoId(id);
         if (!itensComEsteProduto.isEmpty()) {
-            throw new RuntimeException("Não é possível apagar o produto. Motivo: Produto já está associado a pedidos.");
+            throw new BusinessRuleException("Não é possível apagar o produto. Motivo: Produto já está associado a pedidos.");
         }
         produtoRepository.deleteById(id);
     }

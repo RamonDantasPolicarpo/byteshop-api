@@ -1,6 +1,8 @@
 package br.byteshop.ecommerce.bs_api.service;
 
 import br.byteshop.ecommerce.bs_api.dto.ItemPedidoRequestDTO;
+import br.byteshop.ecommerce.bs_api.exception.BusinessRuleException;
+import br.byteshop.ecommerce.bs_api.exception.ResourceNotFoundException;
 import br.byteshop.ecommerce.bs_api.model.Pedido;
 import br.byteshop.ecommerce.bs_api.dto.PedidoRequestDTO;
 import br.byteshop.ecommerce.bs_api.model.*;
@@ -36,10 +38,10 @@ public class PedidoService {
     public Pedido atualizarStatusPedido(Integer idPedido, Integer idNovoStatus) {
 
         Pedido pedido = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado com ID: " + idPedido));
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com ID: " + idPedido));
 
         StatusPedido novoStatus = statusPedidoRepository.findById(idNovoStatus)
-                .orElseThrow(() -> new RuntimeException("Status de Pedido não encontrado com ID: " + idNovoStatus));
+                .orElseThrow(() -> new ResourceNotFoundException("Status de Pedido não encontrado com ID: " + idNovoStatus));
 
         pedido.setStatusPedido(novoStatus);
 
@@ -48,12 +50,10 @@ public class PedidoService {
 
     @Transactional
     public Pedido criarPedido(PedidoRequestDTO requestDTO) {
-        Cliente cliente = clienteService.buscarPorId(requestDTO.getClienteid())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com ID: " + requestDTO.getClienteid()));
-
+        Cliente cliente = clienteService.buscarClienteOuLancarExcecao(requestDTO.getClienteid());
 
         StatusPedido statusInicial = statusPedidoRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("Status de pedido 'ID 1' não encontrado. Verifica a base de dados."));
+                .orElseThrow(() -> new ResourceNotFoundException("Status de pedido 'ID 1' não encontrado. Verifica a base de dados."));
 
         Pedido novoPedido = new Pedido();
         novoPedido.setId_cliente(cliente);
@@ -64,11 +64,10 @@ public class PedidoService {
         novoPedido.setNumeroPedido("PED-" + System.currentTimeMillis());
 
         for (ItemPedidoRequestDTO itemDTO : requestDTO.getItens()) {
-            Produto produto = produtoService.buscarPorId(itemDTO.getProdutoid())
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + itemDTO.getProdutoid()));
+            Produto produto = produtoService.buscarProdutoOuLancarExcecao(itemDTO.getProdutoid());
 
             if (produto.getEstoque() < itemDTO.getQuantidade()) {
-                throw new RuntimeException("Stock insuficiente para o produto: " + produto.getNomeProduto());
+                throw new BusinessRuleException("Stock insuficiente para o produto: " + produto.getNomeProduto());
             }
 
             ItemPedido novoItem = new ItemPedido();
@@ -94,6 +93,11 @@ public class PedidoService {
 
     public Optional<Pedido> buscarPorId(Integer id) {
         return pedidoRepository.findById(id);
+    }
+
+    public Pedido buscarPedidoOuLancarExcecao(Integer id) {
+        return pedidoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com ID: " + id));
     }
 
     public List<Pedido> buscarPedidosPorCliente(Integer clienteId) {

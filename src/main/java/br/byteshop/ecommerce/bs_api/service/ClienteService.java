@@ -1,5 +1,7 @@
 package br.byteshop.ecommerce.bs_api.service;
 
+import br.byteshop.ecommerce.bs_api.exception.BusinessRuleException;
+import br.byteshop.ecommerce.bs_api.exception.ResourceNotFoundException;
 import br.byteshop.ecommerce.bs_api.model.Cliente;
 import br.byteshop.ecommerce.bs_api.model.Pedido;
 import br.byteshop.ecommerce.bs_api.repository.ClienteRepository;
@@ -26,6 +28,11 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
 
+    public Cliente buscarClienteOuLancarExcecao(Integer id){
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID" + id));
+    }
+
     public Optional<Cliente> buscarPorId(Integer id) {
         return clienteRepository.findById(id);
     }
@@ -36,14 +43,13 @@ public class ClienteService {
 
     public void deleteCliente(Integer id) {
         Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + id));
 
         List<Pedido> pedidosDoCliente = pedidoRepository.findByClienteId(id);
 
         if (!pedidosDoCliente.isEmpty()) {
-            throw new RuntimeException("Não é possível apagar o cliente. Motivo: Cliente já possui pedidos associados.");
+            throw new BusinessRuleException("Não é possível apagar o cliente. Motivo: Cliente já possui pedidos associados.");
         }
-
 
         clienteRepository.deleteById(id);
     }
