@@ -14,7 +14,7 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pedido", nullable = false)
-    private Integer id_pedido;
+    private Integer idPedido;
 
     @Column(name = "numero_pedido", nullable = false, unique = true, length = 50)
     private String numeroPedido;
@@ -84,10 +84,10 @@ public class Pedido {
     }
 
     public Integer getId() {
-        return id_pedido;
+        return idPedido;
     }
 
     public void setId(Integer id) {
-        this.id_pedido = id;
+        this.idPedido = id;
     }
 }
