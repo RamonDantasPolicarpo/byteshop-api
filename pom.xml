@@ -12,7 +12,7 @@
 	<artifactId>bs-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bs-api</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Byteshop e-commerce API</description>
 	<url/>
 	<licenses>
 		<license/>
